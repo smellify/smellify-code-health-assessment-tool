@@ -1,4 +1,3 @@
-//models/twoFA.js
 const mongoose = require("mongoose");
 
 const twoFASchema = new mongoose.Schema(

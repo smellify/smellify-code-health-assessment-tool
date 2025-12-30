@@ -1,4 +1,3 @@
-//models/DeletedAccounts.js
 const mongoose = require('mongoose');
 
 const deletedAccountSchema = new mongoose.Schema({

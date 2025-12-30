@@ -1,16 +1,10 @@
-//server/services/smells/duplication.js
-
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
 const parser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 
-// ==================== AST PARSING ====================
 
-/**
- * Parse JavaScript/TypeScript file to AST
- */
 const parseFile = async (filePath) => {
   try {
     const code = await fs.readFile(filePath, 'utf8');
@@ -282,14 +276,7 @@ const findCodeFiles = async (dirPath, fileList = []) => {
   return fileList;
 };
 
-// ==================== MAIN ANALYSIS FUNCTION ====================
 
-/**
- * Main duplication analysis function
- * @param {string} projectPath - Path to the project directory
- * @returns {Promise<Object>} Analysis results
- */
-// const analyzeDuplication = async (projectPath) => {
 //   console.log('Starting code duplication analysis...');
   
 //   const results = {

@@ -72,16 +72,7 @@ Required JSON format:
     prompt += `- Common types: ${[...new Set(hooks.violations.slice(0, 5).map(v => v.type))].join(', ')}\n`;
   }
 
-  // Add prop drilling details
-  // const propDrilling = analyses.propDrilling;
-  // if (propDrilling?.summary?.totalIssues > 0) {
-  //   prompt += `\n## Prop Drilling:\n`;
-  //   prompt += `- ${propDrilling.summary.highSeverity || 0} severe cases (4+ levels deep)\n`;
-  //   prompt += `- ${propDrilling.summary.mediumSeverity || 0} moderate cases (3 levels)\n`;
-  //   if (propDrilling.summary.deepestChain) {
-  //     prompt += `- Deepest chain: ${propDrilling.summary.deepestChain} levels\n`;
-  //   }
-  // }
+  
 
   // In formatAnalysisForAI, update the prop drilling details block
 const propDrilling = analyses.propDrilling;
@@ -96,17 +87,6 @@ if (propDrilling?.summary?.totalIssues > 0) {
   }
 }
 
-  // // Add code quality details
-  // const quality = analyses.codeQuality;
-  // if (quality?.results?.apiRouteIssues?.length > 0 || 
-  //     quality?.results?.mongooseQueryIssues?.length > 0) {
-  //   prompt += `\n## Code Quality:\n`;
-  //   prompt += `- ${quality.results.apiRouteIssues?.length || 0} API route issues\n`;
-  //   prompt += `- ${quality.results.mongooseQueryIssues?.length || 0} database query issues\n`;
-  //   prompt += `- ${quality.results.redundantQueryIssues?.length || 0} redundant queries\n`;
-  // }
-
-  // prompt += `\n\nProvide specific, actionable suggestions. Focus on highest priority improvements.`;
   
 const quality = analyses.codeQuality;
 if (quality) {

@@ -6,13 +6,8 @@ const DeletedAccount = require('../models/DeletedAccounts');
 const authMiddleware = require('../middleware/auth');
 
 
-/**
- * Middleware to check if user is admin (role = 2)
- * This runs after the JWT auth middleware
- */
 const isAdmin = async (req, res, next) => {
   try {
-    // req.user is set by the auth middleware with userId
     const user = await User.findById(req.user.userId || req.user.user_id);
     
     if (!user) {
@@ -38,8 +33,6 @@ const isAdmin = async (req, res, next) => {
         code: 'FORBIDDEN'
       });
     }
-
-    // Attach full user object to request for use in routes
     req.userDetails = user;
     next();
   } catch (error) {
@@ -52,14 +45,7 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-// ==========================================
-// DASHBOARD & STATISTICS
-// ==========================================
 
-/**
- * GET /api/admin/dashboard
- * Get overview statistics for admin dashboard
- */
 router.get('/dashboard', authMiddleware, isAdmin, async (req, res) => {
   try {
     const [
@@ -74,22 +60,13 @@ router.get('/dashboard', authMiddleware, isAdmin, async (req, res) => {
       recentUsers,
       recentDeletions
     ] = await Promise.all([
-      // Total users
+      
       User.countDocuments(),
-      
-      // Active users
       User.countDocuments({ isActive: true }),
-      
-      // Verified users
       User.countDocuments({ isVerified: true }),
-      
-      // Banned users
       User.countDocuments({ isActive: false }),
-      
-      // Total sessions
       Session.countDocuments(),
-      
-      // Active sessions (last 24 hours)
+    
       Session.countDocuments({
         lastActive: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
       }),
@@ -145,21 +122,14 @@ router.get('/dashboard', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-// ==========================================
-// USER MANAGEMENT
-// ==========================================
 
-/**
- * GET /api/admin/users
- * Get all users with filtering, pagination, and search
- */
 router.get('/users', authMiddleware, isAdmin, async (req, res) => {
   try {
     const {
       page = 1,
       limit = 20,
       search = '',
-      status = 'all', // all, active, banned, verified, unverified
+      status = 'all',
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
@@ -225,10 +195,7 @@ router.get('/users', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/users/:userId
- * Get detailed information about a specific user
- */
+
 router.get('/users/:userId', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -265,10 +232,7 @@ router.get('/users/:userId', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * PUT /api/admin/users/:userId/ban
- * Ban a user (set isActive to false)
- */
+
 router.put('/users/:userId/ban', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -325,10 +289,7 @@ router.put('/users/:userId/ban', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * PUT /api/admin/users/:userId/unban
- * Unban a user (set isActive to true)
- */
+
 router.put('/users/:userId/unban', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -372,10 +333,7 @@ router.put('/users/:userId/unban', authMiddleware, isAdmin, async (req, res) => 
   }
 });
 
-/**
- * PUT /api/admin/users/:userId/role
- * Update user role
- */
+
 router.put('/users/:userId/role', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -428,10 +386,6 @@ router.put('/users/:userId/role', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * DELETE /api/admin/users/:userId
- * Permanently delete a user account (admin action)
- */
 router.delete('/users/:userId', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -488,10 +442,7 @@ router.delete('/users/:userId', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * PUT /api/admin/users/:userId/scans
- * Update user's remaining scans
- */
+
 router.put('/users/:userId/scans', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -551,14 +502,7 @@ router.put('/users/:userId/scans', authMiddleware, isAdmin, async (req, res) => 
   }
 });
 
-// ==========================================
-// SESSION MANAGEMENT
-// ==========================================
 
-/**
- * GET /api/admin/sessions
- * Get all active sessions
- */
 router.get('/sessions', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 50, userId } = req.query;
@@ -598,10 +542,7 @@ router.get('/sessions', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * DELETE /api/admin/sessions/:sessionId
- * Delete a specific session (force logout)
- */
+
 router.delete('/sessions/:sessionId', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -634,10 +575,7 @@ router.delete('/sessions/:sessionId', authMiddleware, isAdmin, async (req, res) 
   }
 });
 
-/**
- * DELETE /api/admin/users/:userId/sessions
- * Delete all sessions for a user (force logout from all devices)
- */
+
 router.delete('/users/:userId/sessions', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -662,14 +600,7 @@ router.delete('/users/:userId/sessions', authMiddleware, isAdmin, async (req, re
   }
 });
 
-// ==========================================
-// DELETED ACCOUNTS
-// ==========================================
 
-/**
- * GET /api/admin/deleted-accounts
- * Get all deleted accounts
- */
 router.get('/deleted-accounts', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 20, search = '' } = req.query;
@@ -712,10 +643,7 @@ router.get('/deleted-accounts', authMiddleware, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/github-history/:githubId
- * Check if a GitHub ID has been used before (across all users and deleted accounts)
- */
+
 router.get('/github-history/:githubId', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { githubId } = req.params;
@@ -758,14 +686,6 @@ router.get('/github-history/:githubId', authMiddleware, isAdmin, async (req, res
   }
 });
 
-// ==========================================
-// SYSTEM STATISTICS
-// ==========================================
-
-/**
- * GET /api/admin/statistics/growth
- * Get user growth statistics over time
- */
 router.get('/statistics/growth', authMiddleware, isAdmin, async (req, res) => {
   try {
     const { period = '30d' } = req.query; // 7d, 30d, 90d, 1y

@@ -1,4 +1,3 @@
-// routes/twoFA.js
 const express = require('express');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');

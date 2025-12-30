@@ -1,4 +1,3 @@
-// routes/profile.js
 const express = require('express');
 const User = require('../models/User');
 const UserProfile = require('../models/UserProfile');

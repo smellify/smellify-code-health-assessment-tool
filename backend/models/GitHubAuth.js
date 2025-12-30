@@ -1,4 +1,3 @@
-//models/GitHubAuth.js
 const mongoose = require('mongoose');
 
 const githubAuthSchema = new mongoose.Schema({

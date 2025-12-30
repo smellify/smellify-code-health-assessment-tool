@@ -1,26 +1,3 @@
-// services/propDrilling/duChainBuilder.js
-
-/**
- * A DU Chain represents the path of a single prop from its DEFINITION
- * (where a component receives it) through to all its USES.
- *
- * Structure:
- * {
- *   prop: string,
- *   def: DefPoint,        // Where the prop enters (component receives it)
- *   uses: UsePoint[],     // All C-USE and P-USE points in the def's component
- *   reachingDef: DUChain | null  // If forwarded, the chain continues in child
- * }
- *
- * PROP DRILLING = a chain where multiple components have DEF but NO C-USE/P-USE,
- * only re-DEFing in the next component via forwarding.
- */
-
-/**
- * Build DU chains for all components in the component map
- *
- * Returns a flat list of DU chains, one per (prop, startComponent) pair
- */
 function buildDUChains(componentMap) {
   const chains = [];
   const visited = new Set();
@@ -41,14 +18,7 @@ function buildDUChains(componentMap) {
   return chains;
 }
 
-/**
- * Recursively build a single DU chain for (prop, component)
- *
- * Each "link" in the chain is a DEF node that contains:
- *  - The component where the prop is defined (received)
- *  - All C-USEs and P-USEs of that prop in that component
- *  - A pointer to the next DEF (if the prop is forwarded)
- */
+
 function buildSingleDUChain(prop, component, componentMap, visited) {
   if (visited.has(component.name)) return null;
   visited.add(component.name);
