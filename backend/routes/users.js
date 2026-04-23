@@ -1,3 +1,286 @@
+// // routes/users.js
+// const express = require('express');
+// const User = require('../models/User');
+// const auth = require('../middleware/auth');
+// const router = express.Router();
+
+// // Route to get user profile
+// router.get('/profile', auth, async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user.user_id).select('-password -verificationCode');
+    
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({
+//       id: user._id,
+//       name: user.name,
+//       email: user.email,
+//       role: user.role,
+//       isVerified: user.isVerified,
+//       isOnboardingComplete: user.isOnboardingComplete || false,
+//       lastLogin: user.lastLogin,
+//       createdAt: user.createdAt
+//     });
+//   } catch (error) {
+//     console.error('Error fetching user profile:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Route to update user name (keeping original endpoint for compatibility)
+// router.post('/update-name', auth, async (req, res) => {
+//   try {
+//     const { name } = req.body;
+    
+//     if (!name || !name.trim()) {
+//       return res.status(400).json({ message: 'Name is required' });
+//     }
+
+//     const user = await User.findByIdAndUpdate(
+//       req.user.user_id,
+//       { 
+//         name: name.trim(),
+//         lastLogin: new Date()
+//       },
+//       { new: true }
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({ 
+//       message: 'Name updated successfully',
+//       user: { 
+//         id: user._id, 
+//         email: user.email, 
+//         name: user.name,
+//         role: user.role 
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error updating name:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Route to update user profile (RESTful approach)
+// router.put('/profile', auth, async (req, res) => {
+//   try {
+//     const { name } = req.body;
+    
+//     if (!name || !name.trim()) {
+//       return res.status(400).json({ message: 'Name is required' });
+//     }
+
+//     const user = await User.findByIdAndUpdate(
+//       req.user.user_id,
+//       { 
+//         name: name.trim(),
+//         lastLogin: new Date()
+//       },
+//       { new: true }
+//     ).select('-password -verificationCode');
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({ 
+//       message: 'Profile updated successfully',
+//       user: { 
+//         id: user._id, 
+//         email: user.email, 
+//         name: user.name,
+//         role: user.role 
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error updating profile:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Route to mark onboarding as complete
+// router.post('/complete-onboarding', auth, async (req, res) => {
+//   try {
+//     const user = await User.findByIdAndUpdate(
+//       req.user.user_id,
+//       { 
+//         lastLogin: new Date(),
+//         isOnboardingComplete: true
+//       },
+//       { new: true }
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({ message: 'Onboarding completed successfully' });
+//   } catch (error) {
+//     console.error('Error completing onboarding:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// module.exports = router;
+
+// routes/users.js
+// const express = require('express');
+// const User = require('../models/User');
+// const auth = require('../middleware/auth');
+// const router = express.Router();
+
+// // Helper function to get client IP
+// const getClientIp = (req) => {
+//   return req.headers['x-forwarded-for'] || 
+//          req.headers['x-real-ip'] || 
+//          req.connection.remoteAddress || 
+//          req.socket.remoteAddress ||
+//          (req.connection.socket ? req.connection.socket.remoteAddress : null) ||
+//          req.ip;
+// };
+
+// // Route to get user profile
+// router.get('/profile', auth, async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user.user_id).select('-password -verificationCode');
+    
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({
+//       id: user._id,
+//       name: user.name,
+//       email: user.email,
+//       role: user.role,
+//       isVerified: user.isVerified,
+//       isOnboardingComplete: user.isOnboardingComplete || false,
+//       lastLogin: user.lastLogin,
+//       createdAt: user.createdAt,
+//       createdIp: user.createdIp,
+//       lastLoginIp: user.lastLoginIp
+//     });
+//   } catch (error) {
+//     console.error('Error fetching user profile:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Route to update user name (keeping original endpoint for compatibility)
+// router.post('/update-name', auth, async (req, res) => {
+//   try {
+//     const { name } = req.body;
+    
+//     if (!name || !name.trim()) {
+//       return res.status(400).json({ message: 'Name is required' });
+//     }
+
+//     const clientIp = getClientIp(req);
+
+//     const user = await User.findByIdAndUpdate(
+//       req.user.user_id,
+//       { 
+//         name: name.trim(),
+//         lastLogin: new Date(),
+//         lastLoginIp: clientIp // Update IP on profile updates too
+//       },
+//       { new: true }
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({ 
+//       message: 'Name updated successfully',
+//       user: { 
+//         id: user._id, 
+//         email: user.email, 
+//         name: user.name,
+//         role: user.role 
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error updating name:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Route to update user profile (RESTful approach)
+// router.put('/profile', auth, async (req, res) => {
+//   try {
+//     const { name } = req.body;
+    
+//     if (!name || !name.trim()) {
+//       return res.status(400).json({ message: 'Name is required' });
+//     }
+
+//     const clientIp = getClientIp(req);
+
+//     const user = await User.findByIdAndUpdate(
+//       req.user.user_id,
+//       { 
+//         name: name.trim(),
+//         lastLogin: new Date(),
+//         lastLoginIp: clientIp // Update IP on profile updates too
+//       },
+//       { new: true }
+//     ).select('-password -verificationCode');
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({ 
+//       message: 'Profile updated successfully',
+//       user: { 
+//         id: user._id, 
+//         email: user.email, 
+//         name: user.name,
+//         role: user.role 
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error updating profile:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Route to mark onboarding as complete
+// router.post('/complete-onboarding', auth, async (req, res) => {
+//   try {
+//     const clientIp = getClientIp(req);
+
+//     const user = await User.findByIdAndUpdate(
+//       req.user.user_id,
+//       { 
+//         lastLogin: new Date(),
+//         lastLoginIp: clientIp, // Update IP on onboarding completion
+//         isOnboardingComplete: true
+//       },
+//       { new: true }
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.json({ message: 'Onboarding completed successfully' });
+//   } catch (error) {
+//     console.error('Error completing onboarding:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+
+// module.exports = router;
+
+// routes/users.js
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
