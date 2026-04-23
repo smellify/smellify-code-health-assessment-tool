@@ -2352,16 +2352,15 @@ export default function Signup() {
     }
   };
 
-  const handleGitHubLogin = () => {
-    // Include referral code in GitHub OAuth flow if present
-    const githubUrl =
-      referralCode && referralValidated
-        ? `http://localhost:5000/api/github/login?ref=${encodeURIComponent(referralCode)}`
-        : `http://localhost:5000/api/github/login`;
-
-    window.location.href = githubUrl;
-  };
-
+const handleGitHubLogin = () => {
+  const base = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  const githubUrl =
+    referralCode && referralValidated
+      ? `${base}/github/login?ref=${encodeURIComponent(referralCode)}`
+      : `${base}/github/login`;
+  window.location.href = githubUrl;
+};
+  
   const handleResendCode = async () => {
     if (resendCooldown > 0) return;
 
