@@ -3,7 +3,7 @@ const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
 const User = require('../models/User'); // Add this import
-const TwoFA = require('../models/twoFA');
+const TwoFA = require('../models/TwoFA');
 const auth = require('../middleware/auth');
 const { send2FAEnabledEmail, send2FADisabledEmail } = require('../utils/sendEmail');
 
